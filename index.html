@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Contador do Quadro</title>
+    <style>
+      body {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: 100vh;
+        background-color: #222;
+        margin: 0;
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+        overflow: hidden; /* Evita barras de rolagem desnecessárias */
+      }
+
+      #contador-container {
+        text-align: center;
+        background-color: #333;
+        padding: 40px 60px;
+        border-radius: 20px;
+        box-shadow: 0 0 30px rgba(0, 0, 0, 0.5);
+        max-width: 90%;
+        width: fit-content;
+      }
+
+      #tempo {
+        font-size: 15vw; /* Tamanho responsivo para telas grandes */
+        font-weight: bold;
+        color: #4caf50; /* Verde vibrante para tempo positivo */
+        text-shadow: 0 0 15px rgba(76, 175, 80, 0.7);
+        transition: color 0.5s ease-in-out, text-shadow 0.5s ease-in-out;
+        white-space: nowrap; /* Evita quebra de linha em números grandes */
+        line-height: 1; /* Ajusta a altura da linha */
+      }
+
+      #tempo.alerta {
+        color: #ffc107; /* Amarelo para últimos segundos */
+        text-shadow: 0 0 15px rgba(255, 193, 7, 0.7);
+      }
+
+      #tempo.negativo {
+        color: #f44336; /* Vermelho para tempo negativo */
+        text-shadow: 0 0 15px rgba(244, 67, 54, 0.7);
+      }
+
+      #mensagem {
+        margin-top: 20px;
+        font-size: 2em;
+        color: #eee;
+        opacity: 0.8;
+        height: 1.2em; /* Espaço para a mensagem não saltar */
+      }
+
+      #instrucoes {
+        margin-top: 40px;
+        font-size: 1.2em;
+        color: #aaa;
+        opacity: 0.6;
+      }
+
+      /* Media queries para ajustar o tamanho da fonte em telas menores */
+      @media (max-width: 1200px) {
+        #tempo {
+          font-size: 20vw;
+        }
+      }
+
+      @media (max-width: 768px) {
+        #tempo {
+          font-size: 25vw;
+        }
+        #contador-container {
+          padding: 30px 40px;
+        }
+        #mensagem {
+          font-size: 1.5em;
+        }
+        #instrucoes {
+          font-size: 1em;
+        }
+      }
+
+      @media (max-width: 480px) {
+        #tempo {
+          font-size: 35vw;
+        }
+        #contador-container {
+          padding: 20px 30px;
+        }
+        #mensagem {
+          font-size: 1.2em;
+        }
+        #instrucoes {
+          font-size: 0.9em;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div id="contador-container">
+      <div id="mensagem"></div>
+      <div id="tempo"></div>
+      <div id="relogio">
+        <img src="./relogio.gif" style="width: 200px" alt="Relógio GIF" />
+      </div>
+      <div id="instrucoes">
+        Pressione <strong>ESPAÇO</strong> para iniciar/pausar <br />
+        <small>Ctrl + R para reiniciar</small>
+      </div>
+    </div>
+
+    <script>
+      const tempoDisplay = document.getElementById("tempo");
+      const relogioDisplay = document.getElementById("relogio");
+      const mensagemDisplay = document.getElementById("mensagem");
+      let contagemAtual = 0;
+      let intervalo;
+      let pausado = true;
+      let etapaAtual = 0; // 0: preparação, 1: principal, 2: negativa
+
+      relogioDisplay.style.display = "none"; // Esconde o GIF do relógio antes da preparação
+
+      // Função para formatar o tempo como MM:SS, se necessário
+      function formatarTempo(segundos) {
+        if (segundos >= 0) {
+          return segundos.toString();
+        } else {
+          return segundos.toString(); // Exibe números negativos diretamente
+        }
+      }
+
+      function atualizarContador() {
+        if (pausado) return;
+
+        tempoDisplay.textContent = formatarTempo(contagemAtual);
+
+        // Atualiza as cores com base no tempo
+        tempoDisplay.classList.remove("alerta", "negativo");
+        if (etapaAtual === 0 && contagemAtual <= 3 && contagemAtual > 0) {
+          tempoDisplay.classList.add("alerta"); // Amarelo para os últimos segundos da preparação
+        } else if (
+          etapaAtual === 1 &&
+          contagemAtual <= 10 &&
+          contagemAtual > 0
+        ) {
+          tempoDisplay.classList.add("alerta"); // Amarelo para os últimos 10 segundos da principal
+        } else if (contagemAtual < 0) {
+          tempoDisplay.classList.add("negativo"); // Vermelho para tempo negativo
+        } else {
+          tempoDisplay.style.color = "#4CAF50"; // Verde padrão
+          tempoDisplay.style.textShadow = "0 0 15px rgba(76, 175, 80, 0.7)";
+        }
+
+        if (etapaAtual === 0 && contagemAtual == 0) {
+          tempoDisplay.innerHTML = "Já!";
+        }
+
+        if (etapaAtual > 0 && contagemAtual < 55) {
+          relogioDisplay.style.display = "block"; // Exibe o GIF do relógio após a preparação
+          tempoDisplay.style.display = "none"; // Esconde o CONTADOR após a preparação
+        }
+
+        if (etapaAtual === 0) {
+          // Contagem de preparação (5s)
+          mensagemDisplay.textContent = "PREPARAÇÃO";
+          contagemAtual--;
+          if (contagemAtual < 0) {
+            etapaAtual = 1;
+            contagemAtual = 60; // Inicia a contagem principal
+          }
+        } else if (etapaAtual === 1) {
+          // Contagem principal (60s)
+          mensagemDisplay.textContent = "APRESENTAÇÃO";
+          contagemAtual--;
+          if (contagemAtual < 0) {
+            etapaAtual = 2; // Entra em contagem negativa
+          }
+        } else if (etapaAtual === 2) {
+          // Contagem negativa
+          contagemAtual--;
+        }
+      }
+
+      function togglePausa() {
+        pausado = !pausado;
+        if (!pausado) {
+          if (!intervalo) {
+            // Inicia o contador se não estiver rodando
+            if (contagemAtual === 0 && etapaAtual === 0) {
+              // Inicia a primeira contagem se for a primeira vez
+              contagemAtual = 5;
+              tempoDisplay.textContent = formatarTempo(contagemAtual); // Exibe o 5 antes de começar a decrementar
+            }
+            intervalo = setInterval(atualizarContador, 1000);
+          }
+        } else {
+          clearInterval(intervalo);
+          intervalo = null;
+          if (etapaAtual > 0) {
+            relogioDisplay.style.display = "none"; // Esconde o GIF do relógio após a preparação
+            tempoDisplay.style.display = "block"; // Exibe o CONTADOR após a preparação
+          }
+        }
+      }
+
+      document.addEventListener("keydown", (event) => {
+        if (event.code === "Space") {
+          event.preventDefault(); // Evita a rolagem da página ao apertar espaço
+          togglePausa();
+        }
+      });
+
+      // Inicializa o display com o estado inicial
+      tempoDisplay.textContent = "5"; // Mostra 5 inicialmente para indicar o começo
+      mensagemDisplay.textContent = "PRONTO PARA INICIAR?";
+    </script>
+  </body>
+</html>
