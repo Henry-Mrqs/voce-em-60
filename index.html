@@ -3,6 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js"></script>
     <title>Contador do Quadro</title>
     <style>
       body {
@@ -31,19 +32,24 @@
         font-weight: bold;
         color: #4caf50; /* Verde vibrante para tempo positivo */
         text-shadow: 0 0 15px rgba(76, 175, 80, 0.7);
-        transition: color 0.5s ease-in-out, text-shadow 0.5s ease-in-out;
+        transition: color 0.1s ease-in-out, text-shadow 0.1s ease-in-out;
         white-space: nowrap; /* Evita quebra de linha em números grandes */
         line-height: 1; /* Ajusta a altura da linha */
       }
 
       #tempo.alerta {
-        color: #ffc107; /* Amarelo para últimos segundos */
-        text-shadow: 0 0 15px rgba(255, 193, 7, 0.7);
+        color: #ffc107 !important; /* Amarelo para últimos segundos */
+        text-shadow: 0 0 15px rgba(255, 193, 7, 0.7) !important;
+      }
+
+      #tempo.azul {
+        color: #007bff !important; /* Azul vibrante para tempo positivo */
+        text-shadow: 0 0 15px rgba(0, 123, 255, 0.7) !important;
       }
 
       #tempo.negativo {
-        color: #f44336; /* Vermelho para tempo negativo */
-        text-shadow: 0 0 15px rgba(244, 67, 54, 0.7);
+        color: #f44336 !important; /* Vermelho para tempo negativo */
+        text-shadow: 0 0 15px rgba(244, 67, 54, 0.7) !important;
       }
 
       #mensagem {
@@ -132,6 +138,37 @@
         }
       }
 
+      // Função para disparar os confetes
+      function dispararConfetes() {
+        setTimeout(() => {
+          confetti({
+            particleCount: 1500, // Quantidade de confetes
+            startVelocity: 80,
+            ticks: 500, // Duração do efeito
+            spread: 720, // Ângulo de dispersão (90 é para cima)
+            origin: { y: 0.5 }, // Origem dos confetes na tela (0.6 é um pouco acima do centro)
+          });
+        }, 200); // Dispara novamente após 1 segundo
+        setTimeout(() => {
+          confetti({
+            particleCount: 1500, // Quantidade de confetes
+            startVelocity: 80,
+            ticks: 500, // Duração do efeito
+            spread: 720, // Ângulo de dispersão (90 é para cima)
+            origin: { y: 0.5 }, // Origem dos confetes na tela (0.6 é um pouco acima do centro)
+          });
+        }, 1600); // Dispara novamente após 1 segundo
+        setTimeout(() => {
+          confetti({
+            particleCount: 1500, // Quantidade de confetes
+            startVelocity: 80,
+            ticks: 500, // Duração do efeito
+            spread: 720, // Ângulo de dispersão (90 é para cima)
+            origin: { y: 0.5 }, // Origem dos confetes na tela (0.6 é um pouco acima do centro)
+          });
+        }, 3200); // Dispara novamente após 1 segundo
+      }
+
       function atualizarContador() {
         if (pausado) return;
 
@@ -202,6 +239,12 @@
           if (etapaAtual > 0) {
             relogioDisplay.style.display = "none"; // Esconde o GIF do relógio após a preparação
             tempoDisplay.style.display = "block"; // Exibe o CONTADOR após a preparação
+          }
+          console.log(contagemAtual);
+          console.log(contagemAtual.innerHTML);
+          if (etapaAtual > 0 && tempoDisplay.innerHTML == 0) {
+            tempoDisplay.classList.add("azul"); // Azul para o tempo positivo após a preparação
+            dispararConfetes();
           }
         }
       }
