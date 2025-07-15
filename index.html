@@ -11,30 +11,57 @@
         justify-content: center;
         align-items: center;
         min-height: 100vh;
-        background-color: #222;
+        background: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)),
+          url("./background.jpeg") no-repeat center center fixed;
+        background-size: cover;
         margin: 0;
         font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
         overflow: hidden; /* Evita barras de rolagem desnecessárias */
       }
 
       #contador-container {
+        display: flex; /* Usar flexbox para alinhar itens dentro do container */
+        flex-direction: column; /* Organizar itens em coluna */
+        justify-content: space-between; /* Centralizar verticalmente */
+        align-items: center; /* Centralizar horizontalmente */
         text-align: center;
         background-color: #333;
-        padding: 40px 60px;
+        padding: 20px; /* Reduzi o padding para maximizar o espaço para o tempo/logo */
         border-radius: 20px;
         box-shadow: 0 0 30px rgba(0, 0, 0, 0.5);
-        max-width: 90%;
-        width: fit-content;
+
+        /* Novas regras para o tamanho do container */
+        height: 80vh; /* Ocupa 80% da altura da viewport */
+        width: 80vh; /* Torna-o quadrado, adaptando-se à altura */
+        max-width: 90vw; /* Garante que não exceda 90% da largura da viewport */
+        max-height: 90vw; /* Garante que não exceda 90% da largura, mantendo a proporção em telas muito largas */
+        box-sizing: border-box; /* Inclui padding e borda no cálculo do tamanho */
+      }
+
+      #logo {
+        top: 25px;
+        right: 25px;
+        position: absolute;
+        max-width: 80%; /* Ajuste o tamanho máximo da sua logo */
+        max-height: 20%; /* Reserva espaço para a logo no topo */
+        margin-bottom: 20px; /* Espaçamento entre a logo e a mensagem */
+        object-fit: contain; /* Garante que a imagem se ajuste sem cortar */
       }
 
       #tempo {
-        font-size: 15vw; /* Tamanho responsivo para telas grandes */
+        /* Ajustei o font-size para ser relativo à altura do container */
+        font-size: 45vmin; /* Usa a menor dimensão da viewport (vw ou vh) para responsividade. Ajuste este valor se precisar de maior ou menor. */
         font-weight: bold;
         color: #4caf50; /* Verde vibrante para tempo positivo */
         text-shadow: 0 0 15px rgba(76, 175, 80, 0.7);
         transition: color 0.1s ease-in-out, text-shadow 0.1s ease-in-out;
         white-space: nowrap; /* Evita quebra de linha em números grandes */
         line-height: 1; /* Ajusta a altura da linha */
+        flex-grow: 1; /* Permite que o tempo ocupe o espaço restante */
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 100%; /* Ocupa a largura total do container */
       }
 
       #tempo.alerta {
@@ -54,63 +81,67 @@
 
       #mensagem {
         margin-top: 20px;
-        font-size: 2em;
+        font-size: 40px; /* Adapta a fonte da mensagem ao tamanho do container */
         color: #eee;
         opacity: 0.8;
-        height: 1.2em; /* Espaço para a mensagem não saltar */
+        min-height: 1.2em; /* Garante que o espaço da mensagem seja reservado */
+        margin-bottom: 10px; /* Espaço entre a mensagem e o tempo */
+      }
+
+      #relogio {
+        /* Estilos para o GIF do relógio */
+        max-width: 60%; /* Ajusta o tamanho do GIF */
+        max-height: 60%;
+        object-fit: contain;
+        flex-grow: 1; /* Permite que o relógio ocupe o espaço restante */
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      #relogio img {
+        max-width: 100%;
+        max-height: 100%;
       }
 
       #instrucoes {
-        margin-top: 40px;
-        font-size: 1.2em;
+        margin-top: 20px; /* Reduzi o margin-top */
+        font-size: 1.8vmin; /* Adapta a fonte das instruções */
         color: #aaa;
         opacity: 0.6;
       }
 
-      /* Media queries para ajustar o tamanho da fonte em telas menores */
+      /* As media queries antigas de font-size podem ser removidas ou ajustadas, pois vmin já é responsivo */
       @media (max-width: 1200px) {
-        #tempo {
-          font-size: 20vw;
-        }
+        /* #tempo { font-size: 20vw; } */
       }
 
       @media (max-width: 768px) {
-        #tempo {
-          font-size: 25vw;
-        }
+        /* #tempo { font-size: 25vw; } */
         #contador-container {
-          padding: 30px 40px;
+          padding: 15px; /* Ajuste o padding para telas menores */
         }
-        #mensagem {
-          font-size: 1.5em;
-        }
-        #instrucoes {
-          font-size: 1em;
-        }
+        /* #mensagem { font-size: 1.5em; } */
+        /* #instrucoes { font-size: 1em; } */
       }
 
       @media (max-width: 480px) {
-        #tempo {
-          font-size: 35vw;
-        }
+        /* #tempo { font-size: 35vw; } */
         #contador-container {
-          padding: 20px 30px;
+          padding: 10px; /* Ajuste o padding para telas muito pequenas */
         }
-        #mensagem {
-          font-size: 1.2em;
-        }
-        #instrucoes {
-          font-size: 0.9em;
-        }
+        /* #mensagem { font-size: 1.2em; } */
+        /* #instrucoes { font-size: 0.9em; } */
       }
     </style>
   </head>
   <body>
     <div id="contador-container">
+      <img id="logo" src="logo.png" alt="Fábrica Jovem" />
       <div id="mensagem"></div>
       <div id="tempo"></div>
       <div id="relogio">
-        <img src="./relogio.gif" style="width: 200px" alt="Relógio GIF" />
+        <img src="./relogio.gif" style="width: 100%" alt="Relógio GIF" />
       </div>
       <div id="instrucoes">
         Pressione <strong>ESPAÇO</strong> para iniciar/pausar <br />
@@ -238,7 +269,7 @@
           intervalo = null;
           if (etapaAtual > 0) {
             relogioDisplay.style.display = "none"; // Esconde o GIF do relógio após a preparação
-            tempoDisplay.style.display = "block"; // Exibe o CONTADOR após a preparação
+            tempoDisplay.style.display = "flex"; // Exibe o CONTADOR após a preparação
           }
           console.log(contagemAtual);
           console.log(contagemAtual.innerHTML);
